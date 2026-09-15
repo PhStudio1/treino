@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Treino da Semana</title>
+<style>
+  :root {
+    --bg: #14120f;
+    --bg-card: #1d1a15;
+    --bg-card-done: #23291f;
+    --steel: #8a8578;
+    --steel-light: #c9c4b6;
+    --iron: #3a352c;
+    --accent: #c9a15a;
+    --accent-dim: #7a6538;
+    --done: #6b9080;
+    --white: #f2efe6;
+    --radius: 4px;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--white);
+    font-family: 'Georgia', 'Times New Roman', serif;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .wrap {
+    max-width: 640px;
+    margin: 0 auto;
+    padding: 28px 18px 60px;
+  }
+
+  header {
+    margin-bottom: 24px;
+    border-bottom: 1px solid var(--iron);
+    padding-bottom: 18px;
+  }
+
+  h1 {
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    font-weight: 800;
+    font-size: 28px;
+    letter-spacing: -0.5px;
+    margin: 0 0 4px;
+    color: var(--white);
+  }
+
+  .sub {
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    color: var(--steel);
+    font-size: 14px;
+    margin: 0;
+  }
+
+  .week-nav {
+    display: flex;
+    gap: 6px;
+    margin-top: 18px;
+    overflow-x: auto;
+  }
+
+  .day-btn {
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    background: var(--bg-card);
+    border: 1px solid var(--iron);
+    color: var(--steel-light);
+    padding: 8px 12px;
+    border-radius: var(--radius);
+    cursor: pointer;
+    font-size: 13px;
+    white-space: nowrap;
+    flex-shrink: 0;
+    transition: border-color 0.15s ease, color 0.15s ease;
+  }
+
+  .day-btn.active {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  .day-btn .dot {
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--iron);
+    margin-right: 6px;
+  }
+
+  .day-btn.complete .dot {
+    background: var(--done);
+  }
+
+  .day-title {
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    font-weight: 700;
+    font-size: 15px;
+    color: var(--accent);
+    margin: 28px 0 12px;
+    letter-spacing: 0.2px;
+  }
+
+  .exercise {
+    background: var(--bg-card);
+    border: 1px solid var(--iron);
+    border-radius: var(--radius);
+    padding: 14px 16px;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    cursor: pointer;
+    transition: background 0.15s ease, border-color 0.15s ease;
+  }
+
+  .exercise.done {
+    background: var(--bg-card-done);
+    border-color: var(--done);
+  }
+
+  .check {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    border: 2px solid var(--iron);
+    flex-shrink: 0;
+    position: relative;
+    transition: border-color 0.15s ease, background 0.15s ease;
+  }
+
+  .exercise.done .check {
+    border-color: var(--done);
+    background: var(--done);
+  }
+
+  .exercise.done .check::after {
+    content: '';
+    position: absolute;
+    left: 6px;
+    top: 2px;
+    width: 5px;
+    height: 10px;
+    border: solid var(--bg);
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+  }
+
+  .ex-name {
+    font-size: 16px;
+    color: var(--white);
+    flex: 1;
+  }
+
+  .exercise.done .ex-name {
+    color: var(--steel);
+    text-decoration: line-through;
+    text-decoration-color: var(--done);
+  }
+
+  .meta {
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    font-size: 11px;
+    color: var(--steel);
+    letter-spacing: 0.3px;
+  }
+
+  .progress-bar {
+    height: 3px;
+    background: var(--iron);
+    border-radius: 2px;
+    margin-top: 20px;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: var(--accent);
+    transition: width 0.3s ease;
+  }
+
+  .progress-label {
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    font-size: 12px;
+    color: var(--steel);
+    margin-top: 8px;
+  }
+
+  .reset {
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    background: none;
+    border: 1px solid var(--iron);
+    color: var(--steel);
+    padding: 10px 16px;
+    border-radius: var(--radius);
+    cursor: pointer;
+    font-size: 12px;
+    margin-top: 32px;
+    width: 100%;
+  }
+
+  .reset:active {
+    border-color: var(--accent-dim);
+  }
+
+  .loading {
+    color: var(--steel);
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    font-size: 13px;
+    padding: 40px 0;
+    text-align: center;
+  }
+</style>
+</head>
+<body>
+<div class="wrap" id="app">
+  <div class="loading">Carregando treino...</div>
+</div>
+
+<script>
+const PLAN = {
+  seg: {
+    label: "Segunda",
+    title: "Peito, Ombro e Tríceps",
+    exercises: [
+      { name: "Supino reto", meta: "3 séries · 6-12 reps" },
+      { name: "Supino inclinado", meta: "3 séries · 6-12 reps" },
+      { name: "Crucifixo", meta: "3 séries · 8-12 reps" },
+      { name: "Elevação lateral", meta: "3 séries · 10-15 reps" },
+      { name: "Tríceps corda", meta: "3 séries · 8-12 reps" },
+      { name: "Tríceps testa", meta: "3 séries · 8-12 reps" },
+    ]
+  },
+  ter: {
+    label: "Terça",
+    title: "Costas e Bíceps",
+    exercises: [
+      { name: "Puxada frente pegada aberta", meta: "3 séries · 8-12 reps" },
+      { name: "Puxada frente pegada fechada", meta: "3 séries · 8-12 reps" },
+      { name: "Remada baixa", meta: "3 séries · 8-12 reps" },
+      { name: "Rosca direta", meta: "3 séries · 8-12 reps" },
+      { name: "Rosca alternada", meta: "3 séries · 8-12 reps" },
+      { name: "Rosca martelo", meta: "3 séries · 8-12 reps" },
+    ]
+  },
+  qua: {
+    label: "Quarta",
+    title: "Pernas",
+    exercises: [
+      { name: "Agachamento", meta: "3 séries · 6-12 reps" },
+      { name: "Leg press", meta: "3 séries · 8-12 reps" },
+      { name: "Cadeira extensora", meta: "3 séries · 10-15 reps" },
+      { name: "Mesa flexora", meta: "3 séries · 10-15 reps" },
+      { name: "Panturrilha", meta: "3 séries · 12-15 reps" },
+    ]
+  },
+  qui: {
+    label: "Quinta",
+    title: "Peito, Ombro e Tríceps",
+    exercises: [
+      { name: "Supino reto", meta: "3 séries · 6-12 reps" },
+      { name: "Supino inclinado", meta: "3 séries · 6-12 reps" },
+      { name: "Crucifixo", meta: "3 séries · 8-12 reps" },
+      { name: "Elevação lateral", meta: "3 séries · 10-15 reps" },
+      { name: "Tríceps corda", meta: "3 séries · 8-12 reps" },
+      { name: "Tríceps testa", meta: "3 séries · 8-12 reps" },
+    ]
+  },
+  sex: {
+    label: "Sexta",
+    title: "Costas e Bíceps",
+    exercises: [
+      { name: "Puxada frente pegada aberta", meta: "3 séries · 8-12 reps" },
+      { name: "Puxada frente pegada fechada", meta: "3 séries · 8-12 reps" },
+      { name: "Remada baixa", meta: "3 séries · 8-12 reps" },
+      { name: "Rosca direta", meta: "3 séries · 8-12 reps" },
+      { name: "Rosca alternada", meta: "3 séries · 8-12 reps" },
+      { name: "Rosca martelo", meta: "3 séries · 8-12 reps" },
+    ]
+  }
+};
+
+const DAY_ORDER = ["seg", "ter", "qua", "qui", "sex"];
+
+function getWeekKey() {
+  const now = new Date();
+  const jan1 = new Date(now.getFullYear(), 0, 1);
+  const days = Math.floor((now - jan1) / 86400000);
+  const week = Math.ceil((days + jan1.getDay() + 1) / 7);
+  return `week:${now.getFullYear()}-${week}`;
+}
+
+let state = {};
+let activeDay = DAY_ORDER[0];
+const weekKey = getWeekKey();
+
+async function loadState() {
+  try {
+    const result = await window.storage.get(weekKey, false);
+    state = result ? JSON.parse(result.value) : {};
+  } catch (e) {
+    state = {};
+  }
+}
+
+async function saveState() {
+  try {
+    await window.storage.set(weekKey, JSON.stringify(state), false);
+  } catch (e) {
+    console.error('Erro ao salvar:', e);
+  }
+}
+
+function isDone(day, idx) {
+  return !!(state[day] && state[day][idx]);
+}
+
+function toggle(day, idx) {
+  if (!state[day]) state[day] = {};
+  state[day][idx] = !state[day][idx];
+  saveState();
+  render();
+}
+
+function dayComplete(day) {
+  const total = PLAN[day].exercises.length;
+  const done = state[day] ? Object.values(state[day]).filter(Boolean).length : 0;
+  return { done, total, complete: done === total };
+}
+
+async function resetDay() {
+  state[activeDay] = {};
+  await saveState();
+  render();
+}
+
+function render() {
+  const app = document.getElementById('app');
+  const today = PLAN[activeDay];
+  const { done, total } = dayComplete(activeDay);
+  const pct = total ? Math.round((done / total) * 100) : 0;
+
+  const navHtml = DAY_ORDER.map(d => {
+    const c = dayComplete(d);
+    return `<button class="day-btn ${d === activeDay ? 'active' : ''} ${c.complete ? 'complete' : ''}" data-day="${d}">
+      <span class="dot"></span>${PLAN[d].label}
+    </button>`;
+  }).join('');
+
+  const exHtml = today.exercises.map((ex, idx) => {
+    const done = isDone(activeDay, idx);
+    return `<div class="exercise ${done ? 'done' : ''}" data-idx="${idx}">
+      <div class="check"></div>
+      <div style="flex:1">
+        <div class="ex-name">${ex.name}</div>
+        <div class="meta">${ex.meta}</div>
+      </div>
+    </div>`;
+  }).join('');
+
+  app.innerHTML = `
+    <header>
+      <h1>Treino da Semana</h1>
+      <p class="sub">5 dias · acompanhamento semanal</p>
+      <div class="week-nav">${navHtml}</div>
+    </header>
+    <div class="day-title">${today.label} — ${today.title}</div>
+    ${exHtml}
+    <div class="progress-bar"><div class="progress-fill" style="width:${pct}%"></div></div>
+    <div class="progress-label">${done} de ${total} exercícios concluídos</div>
+    <button class="reset" id="resetBtn">Limpar marcações de ${today.label}</button>
+  `;
+
+  app.querySelectorAll('.day-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      activeDay = btn.dataset.day;
+      render();
+    });
+  });
+
+  app.querySelectorAll('.exercise').forEach(el => {
+    el.addEventListener('click', () => {
+      toggle(activeDay, parseInt(el.dataset.idx));
+    });
+  });
+
+  document.getElementById('resetBtn').addEventListener('click', resetDay);
+}
+
+(async () => {
+  await loadState();
+  render();
+})();
+</script>
+</body>
+</html>
